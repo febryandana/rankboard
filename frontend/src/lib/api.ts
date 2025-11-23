@@ -35,7 +35,7 @@ axiosRetry(apiClient, {
       axiosRetry.isNetworkOrIdempotentRequestError(error) || (error.response?.status ?? 0) >= 500
     );
   },
-  onRetry: (retryCount, error, requestConfig) => {
+  onRetry: (retryCount, _error, requestConfig) => {
     console.log(`Retry attempt ${retryCount} for ${requestConfig.url}`);
   },
 });

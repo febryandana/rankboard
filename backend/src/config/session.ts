@@ -4,6 +4,7 @@ import path from 'path';
 import { env } from './env';
 
 const SQLiteStore = ConnectSqlite3(session);
+const isProduction = process.env.NODE_ENV === 'production';
 
 const sessionMiddleware = session({
   store: new SQLiteStore({
@@ -18,8 +19,8 @@ const sessionMiddleware = session({
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'strict', // Changed from 'lax' to 'strict' for better security
+    secure: isProduction,
+    sameSite: isProduction ? 'strict' : 'lax',
     path: '/',
   },
   name: 'rankboard.sid',
