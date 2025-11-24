@@ -320,6 +320,9 @@ docker run --rm -v rankboard_backend-database:/db -v $(pwd):/backup alpine tar c
        root /opt/rankboard/frontend/dist;
        index index.html;
 
+       # Set File Upload Limit Size
+       client_max_body_size 50M;
+
        # Security headers
        add_header X-Frame-Options "SAMEORIGIN" always;
        add_header X-Content-Type-Options "nosniff" always;
