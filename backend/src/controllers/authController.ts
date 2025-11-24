@@ -6,8 +6,8 @@ import { UnauthorizedError } from '../middleware/errorHandler';
 
 export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { username, password } = req.body;
-    const user = await userService.getUserByUsername(username);
+    const { email, password } = req.body;
+    const user = await userService.getUserByEmailForAuth(email);
 
     if (!user) {
       throw new UnauthorizedError('Invalid credentials');

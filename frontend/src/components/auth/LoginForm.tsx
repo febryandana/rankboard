@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 
 export default function LoginForm() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -19,7 +19,7 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      await login(username, password);
+      await login(email, password);
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Login failed');
@@ -44,21 +44,21 @@ export default function LoginForm() {
           </div>
         )}
 
-        {/* Username field */}
+        {/* Email field */}
         <div className="space-y-2">
-          <label htmlFor="username" className="text-sm font-medium text-foreground">
-            Username
+          <label htmlFor="email" className="text-sm font-medium text-foreground">
+            Email
           </label>
           <input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-            placeholder="Enter your username"
+            placeholder="Enter your email"
             required
             autoFocus
-            autoComplete="username"
+            autoComplete="email"
           />
         </div>
 
