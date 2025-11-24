@@ -111,6 +111,17 @@ export async function getUserByUsername(username: string): Promise<User | null> 
 }
 
 /**
+ * Retrieves a user by email address (includes password hash for authentication)
+ *
+ * @param email - Email address to search for
+ * @returns Promise resolving to user with password hash, or null if not found
+ */
+export async function getUserByEmailForAuth(email: string): Promise<User | null> {
+  const repository = getUserRepository();
+  return repository.findByEmail(email);
+}
+
+/**
  * Retrieves a user by email address
  *
  * @param email - Email address to search for

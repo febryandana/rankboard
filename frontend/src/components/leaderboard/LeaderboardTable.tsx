@@ -18,6 +18,18 @@ const getMedalIcon = (rank: number) => {
 const LeaderboardTable = memo(function LeaderboardTable({ leaderboard }: LeaderboardTableProps) {
   const { user } = useAuth();
 
+  // Sort leaderboard by total score (descending), then by username (ascending)
+  const sortedLeaderboard = useMemo(() => {
+    return [...leaderboard].sort((a, b) => {
+      // Primary sort: total_score descending
+      if (b.total_score !== a.total_score) {
+        return b.total_score - a.total_score;
+      }
+      // Secondary sort: username ascending
+      return a.username.localeCompare(b.username);
+    });
+  }, [leaderboard]);
+
   // Memoize expensive admin list calculation
   const admins = useMemo(() => {
     return Array.from(
@@ -65,7 +77,7 @@ const LeaderboardTable = memo(function LeaderboardTable({ leaderboard }: Leaderb
             </tr>
           </thead>
           <tbody>
-            {leaderboard.map((entry) => {
+            {sortedLeaderboard.map((entry) => {
               const isCurrentUser = user?.id === entry.user_id;
               const hasSubmission = entry.submission_id !== null;
 

@@ -178,7 +178,7 @@ RankBoard follows a microservices-inspired architecture with clear separation of
    - API: `http://localhost:3000/api`
 
 5. **Default admin credentials**
-   - Username: `admin`
+   - Email: `admin@example.com`
    - Password: `Admin123!` (or as configured in `.env`)
 
 ### Manual Development Setup

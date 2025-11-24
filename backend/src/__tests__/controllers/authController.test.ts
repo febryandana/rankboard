@@ -6,7 +6,11 @@ import { AuthRequest } from '../../types';
 import { UnauthorizedError } from '../../middleware/errorHandler';
 
 // Mock dependencies
-jest.mock('../../services/userService');
+jest.mock('../../services/userService', () => ({
+  getUserByEmailForAuth: jest.fn(),
+  verifyPassword: jest.fn(),
+  getUserById: jest.fn(),
+}));
 jest.mock('../../config/logger', () => ({
   logger: {
     error: jest.fn(),
@@ -63,12 +67,14 @@ describe('AuthController', () => {
       };
 
       mockRequest.body = {
-        username: 'testuser',
+        email: 'test@example.com',
         password: 'password123',
       };
 
       (
-        userService.getUserByUsername as jest.MockedFunction<typeof userService.getUserByUsername>
+        userService.getUserByEmailForAuth as jest.MockedFunction<
+          typeof userService.getUserByEmailForAuth
+        >
       ).mockResolvedValue(mockUser);
       (
         userService.verifyPassword as jest.MockedFunction<typeof userService.verifyPassword>
@@ -82,7 +88,7 @@ describe('AuthController', () => {
       // Wait for async operations
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(userService.getUserByUsername).toHaveBeenCalledWith('testuser');
+      expect(userService.getUserByEmailForAuth).toHaveBeenCalledWith('test@example.com');
       expect(userService.verifyPassword).toHaveBeenCalledWith('password123', 'hashed_password');
       expect(mockRequest.session?.regenerate).toHaveBeenCalled();
       expect(mockRequest.session?.save).toHaveBeenCalled();
@@ -94,14 +100,16 @@ describe('AuthController', () => {
       });
     });
 
-    it('should return error with invalid username', async () => {
+    it('should return error with invalid email', async () => {
       mockRequest.body = {
-        username: 'nonexistent',
+        email: 'nonexistent@example.com',
         password: 'password123',
       };
 
       (
-        userService.getUserByUsername as jest.MockedFunction<typeof userService.getUserByUsername>
+        userService.getUserByEmailForAuth as jest.MockedFunction<
+          typeof userService.getUserByEmailForAuth
+        >
       ).mockResolvedValue(null);
 
       await authController.login(mockRequest as Request, mockResponse as Response, nextFunction);
@@ -122,12 +130,14 @@ describe('AuthController', () => {
       };
 
       mockRequest.body = {
-        username: 'testuser',
+        email: 'test@example.com',
         password: 'wrongpassword',
       };
 
       (
-        userService.getUserByUsername as jest.MockedFunction<typeof userService.getUserByUsername>
+        userService.getUserByEmailForAuth as jest.MockedFunction<
+          typeof userService.getUserByEmailForAuth
+        >
       ).mockResolvedValue(mockUser);
       (
         userService.verifyPassword as jest.MockedFunction<typeof userService.verifyPassword>

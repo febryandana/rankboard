@@ -30,7 +30,9 @@ export default function ScoringTable({ challengeId, onScoreUpdate }: ScoringTabl
     try {
       const usersRes = await usersApi.getAll('user');
       if (usersRes.success && usersRes.data) {
-        setUsers(usersRes.data);
+        // Sort users by username (ascending)
+        const sortedUsers = usersRes.data.sort((a, b) => a.username.localeCompare(b.username));
+        setUsers(sortedUsers);
       }
 
       const submissionsRes = await submissionsApi.getByChallengeId(challengeId);

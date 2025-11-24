@@ -35,7 +35,7 @@ export default function SubmissionForm({
     }
 
     if (!validateFilename(file.name)) {
-      setError('Filename must not contain spaces. Please rename your file.');
+      setError('Filename must only contain letters, numbers, dots, underscores, and hyphens.');
       setSelectedFile(null);
       return;
     }
@@ -142,7 +142,8 @@ export default function SubmissionForm({
         </div>
 
         <p className="text-xs text-muted-foreground">
-          PDF only, max 50MB, filename must not contain spaces
+          PDF only, max 50MB. Filename must only contain letters, numbers, dots, underscores, and
+          hyphens
         </p>
       </div>
 

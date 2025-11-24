@@ -43,8 +43,15 @@ export const submissionUpload = multer({
   storage: multer.diskStorage({
     destination: submissionsDir,
     filename: (req, file, cb) => {
-      if (file.originalname.includes(' ')) {
-        cb(new Error('Filename must not contain spaces'), '');
+      // Validate filename contains only allowed characters: A-Z, a-z, 0-9, ., _, -
+      const allowedCharsRegex = /^[A-Za-z0-9._-]+$/;
+      const filenameWithoutExt = file.originalname.replace(/\.pdf$/i, '');
+
+      if (!allowedCharsRegex.test(filenameWithoutExt)) {
+        cb(
+          new Error('Filename must only contain letters, numbers, dots, underscores, and hyphens'),
+          ''
+        );
         return;
       }
 

@@ -51,7 +51,8 @@ export default function UserManagement() {
       );
     }
 
-    return filtered;
+    // Sort by username (ascending)
+    return filtered.sort((a, b) => a.username.localeCompare(b.username));
   }, [users, searchQuery, roleFilter]);
 
   const handleCreate = async (data: CreateUserData) => {

@@ -52,7 +52,7 @@ Login user or admin.
 
 ```json
 {
-  "username": "string",
+  "email": "string",
   "password": "string"
 }
 ```
@@ -422,7 +422,7 @@ Submit file for challenge (user only, one submission per challenge).
 
 **Form Data:**
 
-- `submission`: PDF file (filename must not contain spaces)
+- `submission`: PDF file (filename must only contain letters, numbers, dots, underscores, and hyphens [A-Za-z0-9._-])
 
 **Response (201):**
 
