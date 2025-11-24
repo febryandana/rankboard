@@ -6,7 +6,7 @@ import {
   submissions as submissionsApi,
 } from '../../lib/api';
 import { getAvatarUrl } from '../../lib/utils';
-import { User, Download, Save } from 'lucide-react';
+import { User, Download, Save, Eye } from 'lucide-react';
 
 interface ScoringTableProps {
   challengeId: number;
@@ -18,8 +18,12 @@ export default function ScoringTable({ challengeId, onScoreUpdate }: ScoringTabl
   const [users, setUsers] = useState<any[]>([]);
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [scores, setScores] = useState<{ [key: string]: { score: number; feedback: string } }>({});
-  const [saving, setSaving] = useState<{ [key: string]: boolean }>({});
+  const [originalScores, setOriginalScores] = useState<{
+    [key: string]: { score: number; feedback: string };
+  }>({});
+  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -55,6 +59,8 @@ export default function ScoringTable({ challengeId, onScoreUpdate }: ScoringTabl
           });
         });
         setScores(scoresData);
+        setOriginalScores(structuredClone(scoresData));
+        setHasUnsavedChanges(false);
       }
     } catch (error) {
       console.error('Failed to load scoring data:', error);
@@ -66,41 +72,77 @@ export default function ScoringTable({ challengeId, onScoreUpdate }: ScoringTabl
   const handleScoreChange = (submissionId: number, value: string) => {
     const key = `${submissionId}_${currentUser?.id}`;
     const numValue = value === '' ? 0 : parseInt(value, 10);
-    setScores((prev) => ({
-      ...prev,
-      [key]: {
-        ...prev[key],
-        score: isNaN(numValue) ? 0 : numValue,
-      },
-    }));
+    setScores((prev) => {
+      const newScores = {
+        ...prev,
+        [key]: {
+          ...prev[key],
+          score: isNaN(numValue) ? 0 : numValue,
+        },
+      };
+      // Check if there are unsaved changes by comparing with original scores
+      const hasChanges = Object.keys(newScores).some((k) => {
+        const original = originalScores[k] || { score: 0, feedback: '' };
+        const current = newScores[k];
+        return current.score !== original.score || current.feedback !== original.feedback;
+      });
+      setHasUnsavedChanges(hasChanges);
+      return newScores;
+    });
   };
 
   const handleFeedbackChange = (submissionId: number, value: string) => {
     const key = `${submissionId}_${currentUser?.id}`;
-    setScores((prev) => ({
-      ...prev,
-      [key]: {
-        ...prev[key],
-        feedback: value,
-      },
-    }));
+    setScores((prev) => {
+      const newScores = {
+        ...prev,
+        [key]: {
+          ...prev[key],
+          feedback: value,
+        },
+      };
+      // Check if there are unsaved changes by comparing with original scores
+      const hasChanges = Object.keys(newScores).some((k) => {
+        const original = originalScores[k] || { score: 0, feedback: '' };
+        const current = newScores[k];
+        return current.score !== original.score || current.feedback !== original.feedback;
+      });
+      setHasUnsavedChanges(hasChanges);
+      return newScores;
+    });
   };
 
-  const handleSave = async (submissionId: number) => {
-    const key = `${submissionId}_${currentUser?.id}`;
-    const scoreData = scores[key] || { score: 0, feedback: '' };
-
-    setSaving((prev) => ({ ...prev, [key]: true }));
+  const handleSaveAll = async () => {
+    setSaving(true);
 
     try {
-      await scoresApi.createOrUpdate(submissionId, scoreData);
+      // Save all submissions with changes
+      const savePromises = submissions.map(async (submission) => {
+        const key = `${submission.id}_${currentUser?.id}`;
+        const scoreData = scores[key];
+        if (
+          scoreData &&
+          JSON.stringify(scoreData) !==
+            JSON.stringify(originalScores[key] || { score: 0, feedback: '' })
+        ) {
+          return scoresApi.createOrUpdate(submission.id, scoreData);
+        }
+        return Promise.resolve();
+      });
+
+      await Promise.all(savePromises);
+
+      // Update original scores to current scores after successful save
+      setOriginalScores(scores);
+      setHasUnsavedChanges(false);
+
       if (onScoreUpdate) {
         onScoreUpdate();
       }
     } catch (error) {
-      console.error('Failed to save score:', error);
+      console.error('Failed to save scores:', error);
     } finally {
-      setSaving((prev) => ({ ...prev, [key]: false }));
+      setSaving(false);
     }
   };
 
@@ -120,6 +162,17 @@ export default function ScoringTable({ challengeId, onScoreUpdate }: ScoringTabl
     }
   };
 
+  const handleView = async (submissionId: number) => {
+    try {
+      const blob = await submissionsApi.download(submissionId);
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      // Note: We don't revoke the URL here as the new tab needs it
+    } catch (error) {
+      console.error('Failed to view submission:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -130,6 +183,32 @@ export default function ScoringTable({ challengeId, onScoreUpdate }: ScoringTabl
 
   return (
     <div className="bg-card border rounded-lg overflow-hidden">
+      {/* Global Save Button */}
+      <div className="p-4 bg-muted/50 border-b">
+        <div className="flex justify-between items-center">
+          {hasUnsavedChanges && (
+            <span className="text-sm text-muted-foreground">You have unsaved changes</span>
+          )}
+          <button
+            onClick={handleSaveAll}
+            disabled={saving}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {saving ? (
+              <>
+                <div className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                <span>Saving All...</span>
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                <span>Save All Changes</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-muted/50 border-b">
@@ -144,9 +223,6 @@ export default function ScoringTable({ challengeId, onScoreUpdate }: ScoringTabl
               <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">
                 Your Feedback
               </th>
-              <th className="px-4 py-3 text-center text-sm font-semibold text-foreground">
-                Action
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -154,7 +230,6 @@ export default function ScoringTable({ challengeId, onScoreUpdate }: ScoringTabl
               const submission = submissions.find((s) => s.user_id === userRow.id);
               const key = submission ? `${submission.id}_${currentUser?.id}` : '';
               const scoreData = scores[key] || { score: 0, feedback: '' };
-              const isSaving = saving[key] || false;
 
               return (
                 <tr key={userRow.id} className="border-b last:border-0">
@@ -179,13 +254,24 @@ export default function ScoringTable({ challengeId, onScoreUpdate }: ScoringTabl
                   {/* Submission */}
                   <td className="px-4 py-3 text-center">
                     {submission ? (
-                      <button
-                        onClick={() => handleDownload(submission.id, submission.filename)}
-                        className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary text-sm rounded-md hover:bg-primary/20 transition-colors"
-                      >
-                        <Download className="h-4 w-4" />
-                        Download
-                      </button>
+                      <div className="flex items-center gap-2 justify-center">
+                        <button
+                          onClick={() => handleView(submission.id)}
+                          className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary text-sm rounded-md hover:bg-primary/20 transition-colors"
+                          title="View in browser"
+                        >
+                          <Eye className="h-4 w-4" />
+                          View
+                        </button>
+                        <button
+                          onClick={() => handleDownload(submission.id, submission.filename)}
+                          className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary text-sm rounded-md hover:bg-primary/20 transition-colors"
+                          title="Download file"
+                        >
+                          <Download className="h-4 w-4" />
+                          Download
+                        </button>
+                      </div>
                     ) : (
                       <span className="text-muted-foreground text-sm">No submission</span>
                     )}
@@ -217,29 +303,6 @@ export default function ScoringTable({ challengeId, onScoreUpdate }: ScoringTabl
                       placeholder="Enter feedback..."
                       className="w-full min-w-[200px] px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring resize-y disabled:opacity-50 disabled:cursor-not-allowed"
                     />
-                  </td>
-
-                  {/* Save button */}
-                  <td className="px-4 py-3 text-center">
-                    {submission && (
-                      <button
-                        onClick={() => handleSave(submission.id)}
-                        disabled={isSaving}
-                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary text-primary-foreground text-sm rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      >
-                        {isSaving ? (
-                          <>
-                            <div className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                            <span>Saving...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Save className="h-4 w-4" />
-                            <span>Save</span>
-                          </>
-                        )}
-                      </button>
-                    )}
                   </td>
                 </tr>
               );
