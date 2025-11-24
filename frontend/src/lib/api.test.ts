@@ -128,10 +128,10 @@ describe('api client service', () => {
       data: { success: true, data: { user: { id: 1 } } },
     });
 
-    const response = await api.auth.login({ username: 'jane', password: 'secret' });
+    const response = await api.auth.login({ email: 'jane@example.com', password: 'secret' });
 
     expect(mockAxiosInstance.post).toHaveBeenCalledWith('/auth/login', {
-      username: 'jane',
+      email: 'jane@example.com',
       password: 'secret',
     });
     expect(response).toEqual({ success: true, data: { user: { id: 1 } } });
