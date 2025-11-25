@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { User, CreateUserData, UpdateUserData } from '../../types';
+import { type User, type CreateUserData, type UpdateUserData } from '../../types';
 import { users as usersApi } from '../../lib/api';
 import { useAuth } from '../../hooks/useAuth';
 import { getAvatarUrl } from '../../lib/utils';
@@ -69,7 +69,9 @@ export default function UserManagement() {
   };
 
   const handleUpdate = async (data: UpdateUserData) => {
-    if (!editingUser) return;
+    if (!editingUser) {
+      return;
+    }
 
     try {
       const response = await usersApi.update(editingUser.id, data);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Challenge, Submission, LeaderboardEntry } from '../types';
+import { type Challenge, type Submission, type LeaderboardEntry } from '../types';
 import {
   challenges as challengesApi,
   submissions as submissionsApi,
@@ -26,7 +26,9 @@ export default function UserChallenge() {
   const challengeId = parseInt(id || '0', 10);
 
   const loadData = async () => {
-    if (!challengeId) return;
+    if (!challengeId) {
+      return;
+    }
 
     setLoading(true);
     setError('');

@@ -1,0 +1,78 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rankboard-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - FRONTEND_URL=http://frontend:3001
+      - PORT=3000
+      - SESSION_SECRET=${SESSION_SECRET:-889oZriQ22SLIdJj7yQuuGlLXf7m6vyT}
+      - ROOT_ADMIN_USERNAME=${ROOT_ADMIN_USERNAME:-admin}
+      - ROOT_ADMIN_EMAIL=${ROOT_ADMIN_EMAIL:-admin@rankboard.local}
+      - ROOT_ADMIN_PASSWORD=${ROOT_ADMIN_PASSWORD:-Admin123!}
+    volumes:
+      - backend-uploads:/app/uploads
+      - backend-database:/app/database
+    networks:
+      - rankboard-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/api/auth/session', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: rankboard-frontend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - VITE_API_URL=http://backend:3000/api
+      - VITE_UPLOADS_URL=http://backend:3000/uploads
+    depends_on:
+      - backend
+    networks:
+      - rankboard-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3001/', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  web:
+    image: nginx:alpine
+    container_name: rankboard-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./web/nginx-http.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - rankboard-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  backend-uploads:
+  backend-database:
+
+networks:
+  rankboard-network:
+    driver: bridge

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, UpdateUserData } from '../../types';
+import { type User, type UpdateUserData } from '../../types';
 import { users as usersApi } from '../../lib/api';
 import { useAuth } from '../../hooks/useAuth';
 import AvatarUpload from './AvatarUpload';
@@ -25,7 +25,9 @@ export default function ProfileForm({ user, onUpdate }: ProfileFormProps) {
       const response = await usersApi.uploadAvatar(user.id, file);
       if (response.success && response.data) {
         updateUser({ avatar_filename: response.data.avatar_filename });
-        if (onUpdate) onUpdate();
+        if (onUpdate) {
+          onUpdate();
+        }
       }
     } catch (err: any) {
       throw new Error(err.response?.data?.error || err.message || 'Upload failed');
@@ -36,7 +38,9 @@ export default function ProfileForm({ user, onUpdate }: ProfileFormProps) {
     try {
       await usersApi.deleteAvatar(user.id);
       updateUser({ avatar_filename: null });
-      if (onUpdate) onUpdate();
+      if (onUpdate) {
+        onUpdate();
+      }
     } catch (err: any) {
       throw new Error(err.response?.data?.error || err.message || 'Remove failed');
     }

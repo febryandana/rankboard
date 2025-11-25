@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useChallenges } from '../hooks/useChallenges';
-import { CreateChallengeData } from '../types';
+import { type CreateChallengeData } from '../types';
 import { toast } from 'sonner';
 import DateTimeInput from '../components/ui/DateTimeInput';
 import { Save, X, FileText } from 'lucide-react';

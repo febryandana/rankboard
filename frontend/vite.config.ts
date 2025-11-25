@@ -9,9 +9,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
     css: true,
+    watch: false,
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'lcov', 'html'],
       exclude: ['node_modules/', 'src/test/', '**/*.d.ts', '**/*.config.*', '**/mockData', 'dist/'],
     },
   },
@@ -30,6 +31,11 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: process.env.VITE_API_URL || 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/uploads': {
+        target: process.env.VITE_UPLOADS_URL || 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
       },

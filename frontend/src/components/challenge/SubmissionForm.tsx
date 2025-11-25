@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Submission } from '../../types';
+import { type Submission } from '../../types';
 import { submissions as submissionsApi } from '../../lib/api';
 import { Upload, File, X, Check } from 'lucide-react';
 import { validateFilename } from '../../lib/utils';
@@ -26,7 +26,9 @@ export default function SubmissionForm({
     setError('');
     setSuccess('');
 
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     if (file.type !== 'application/pdf') {
       setError('Only PDF files are allowed');

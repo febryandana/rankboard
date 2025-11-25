@@ -51,3 +51,6 @@ yarn-error.log*
 .cache/
 .parcel-cache/
 .yarn/
+*.cert
+*.pem
+*.privkey

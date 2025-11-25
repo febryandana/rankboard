@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { LeaderboardEntry } from '../../types';
+import { type LeaderboardEntry } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { getAvatarUrl, cn } from '../../lib/utils';
 import { User, Trophy } from 'lucide-react';
@@ -9,9 +9,15 @@ interface LeaderboardTableProps {
 }
 
 const getMedalIcon = (rank: number) => {
-  if (rank === 1) return '🥇';
-  if (rank === 2) return '🥈';
-  if (rank === 3) return '🥉';
+  if (rank === 1) {
+    return '🥇';
+  }
+  if (rank === 2) {
+    return '🥈';
+  }
+  if (rank === 3) {
+    return '🥉';
+  }
   return null;
 };
 

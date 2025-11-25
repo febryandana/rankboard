@@ -62,10 +62,18 @@ export async function update(req: Request, res: Response, next: NextFunction): P
     const { title, description, created_at, deadline } = req.body;
 
     const updateData: any = {};
-    if (title !== undefined) updateData.title = title;
-    if (description !== undefined) updateData.description = description;
-    if (created_at !== undefined) updateData.created_at = created_at;
-    if (deadline !== undefined) updateData.deadline = deadline;
+    if (title !== undefined) {
+      updateData.title = title;
+    }
+    if (description !== undefined) {
+      updateData.description = description;
+    }
+    if (created_at !== undefined) {
+      updateData.created_at = created_at;
+    }
+    if (deadline !== undefined) {
+      updateData.deadline = deadline;
+    }
 
     const challenge = await challengeService.updateChallenge(challengeId, updateData);
 

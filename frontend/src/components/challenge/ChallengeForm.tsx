@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Challenge, CreateChallengeData, UpdateChallengeData } from '../../types';
+import { type Challenge, type CreateChallengeData, type UpdateChallengeData } from '../../types';
 import DateTimeInput from '../ui/DateTimeInput';
 import { Save, X } from 'lucide-react';
 

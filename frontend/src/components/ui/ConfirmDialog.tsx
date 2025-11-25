@@ -24,7 +24,9 @@ export default function ConfirmDialog({
   onCancel,
   loading = false,
 }: ConfirmDialogProps) {
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
 
   return (
     <div
