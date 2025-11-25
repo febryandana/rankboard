@@ -38,10 +38,7 @@ app.use(
       const allowedOrigins = [
         'http://localhost:5173',
         'http://localhost:3000',
-        'http://rankboard-frontend',
-        'http://rankboard-backend',
-        'http://frontend',
-        'http://backend',
+        process.env.FRONTEND_URL,
       ];
 
       if (allowedOrigins.includes(origin)) {
