@@ -9,12 +9,12 @@
   },
   "lint-staged": {
     "backend/**/*.{ts,tsx}": [
-      "cd backend && eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "cd backend && eslint . --fix"
     ],
     "frontend/**/*.{ts,tsx}": [
-      "cd frontend && eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "cd frontend && eslint . --fix"
     ],
     "*.{json,md}": [
       "prettier --write"
