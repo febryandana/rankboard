@@ -1,4 +1,4 @@
-import { Challenge } from '../../types';
+import { type Challenge } from '../../types';
 import { formatDate, formatTimeRemaining, getTimeRemaining } from '../../lib/utils';
 import { Calendar, Clock } from 'lucide-react';
 import { cn } from '../../lib/utils';

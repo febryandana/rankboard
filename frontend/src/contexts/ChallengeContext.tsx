@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Challenge, CreateChallengeData, UpdateChallengeData } from '../types';
+import { type Challenge, type CreateChallengeData, type UpdateChallengeData } from '../types';
 import { challenges as challengesApi } from '../lib/api';
 
 interface ChallengeContextType {

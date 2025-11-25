@@ -77,17 +77,31 @@ export async function update(req: Request, res: Response, next: NextFunction): P
     }
 
     const updateData: any = {};
-    if (username !== undefined) updateData.username = username;
-    if (email !== undefined) updateData.email = email;
-    if (password !== undefined) updateData.password = password;
-    if (role !== undefined) updateData.role = role;
+    if (username !== undefined) {
+      updateData.username = username;
+    }
+    if (email !== undefined) {
+      updateData.email = email;
+    }
+    if (password !== undefined) {
+      updateData.password = password;
+    }
+    if (role !== undefined) {
+      updateData.role = role;
+    }
 
     const user = await userService.updateUser(userId, updateData);
 
     if (authReq.session.userId === userId) {
-      if (username !== undefined) authReq.session.username = username;
-      if (email !== undefined) authReq.session.email = email;
-      if (role !== undefined) authReq.session.role = role;
+      if (username !== undefined) {
+        authReq.session.username = username;
+      }
+      if (email !== undefined) {
+        authReq.session.email = email;
+      }
+      if (role !== undefined) {
+        authReq.session.role = role;
+      }
     }
 
     res.json({

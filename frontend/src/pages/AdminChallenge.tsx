@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Challenge, UpdateChallengeData } from '../types';
+import { type Challenge, type UpdateChallengeData } from '../types';
 import { challenges as challengesApi } from '../lib/api';
 import { formatDate } from '../lib/utils';
 import ChallengeForm from '../components/challenge/ChallengeForm';
@@ -22,7 +22,9 @@ export default function AdminChallenge() {
   const challengeId = parseInt(id || '0', 10);
 
   const loadChallenge = async () => {
-    if (!challengeId) return;
+    if (!challengeId) {
+      return;
+    }
 
     setLoading(true);
     setError('');

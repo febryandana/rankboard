@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, CreateUserData, UpdateUserData, UserRole } from '../../types';
+import { type User, type CreateUserData, type UpdateUserData, type UserRole } from '../../types';
 import { Save, X } from 'lucide-react';
 
 interface AccountFormProps {

@@ -18,7 +18,9 @@ export default function AvatarUpload({ currentAvatar, onUpload, onRemove }: Avat
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
       alert('Only JPEG, PNG, and GIF images are allowed');
@@ -52,7 +54,9 @@ export default function AvatarUpload({ currentAvatar, onUpload, onRemove }: Avat
   };
 
   const handleRemove = async () => {
-    if (!currentAvatar) return;
+    if (!currentAvatar) {
+      return;
+    }
 
     setRemoving(true);
     try {

@@ -78,7 +78,9 @@ export const submissionUpload = multer({
 export const submissionUploadWithValidation = [
   submissionUpload.single('submission'),
   async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.file) return next();
+    if (!req.file) {
+      return next();
+    }
 
     try {
       const isValid = await validatePDF(req.file.path);
@@ -105,7 +107,9 @@ export const submissionUploadWithValidation = [
 export const avatarUploadWithValidation = [
   avatarUpload.single('avatar'),
   async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.file) return next();
+    if (!req.file) {
+      return next();
+    }
 
     try {
       const isValid = await validateImage(req.file.path);

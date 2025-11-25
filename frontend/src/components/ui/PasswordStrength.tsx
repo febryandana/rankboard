@@ -53,12 +53,24 @@ export default function PasswordStrength({
 
     // Calculate strength score
     let score = 0;
-    if (password.length >= 8) score++;
-    if (password.length >= 12) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[^a-zA-Z0-9]/.test(password)) score++;
+    if (password.length >= 8) {
+      score++;
+    }
+    if (password.length >= 12) {
+      score++;
+    }
+    if (/[a-z]/.test(password)) {
+      score++;
+    }
+    if (/[A-Z]/.test(password)) {
+      score++;
+    }
+    if (/[0-9]/.test(password)) {
+      score++;
+    }
+    if (/[^a-zA-Z0-9]/.test(password)) {
+      score++;
+    }
 
     // All requirements must be met for valid password
     const allRequirementsMet = reqs.every((req) => req.met);
@@ -94,7 +106,9 @@ export default function PasswordStrength({
     }
   }, [password]);
 
-  if (!password || !showStrength) return null;
+  if (!password || !showStrength) {
+    return null;
+  }
 
   return (
     <div className="space-y-2">

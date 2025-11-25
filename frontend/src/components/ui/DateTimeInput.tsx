@@ -81,14 +81,18 @@ export default function DateTimeInput({
   };
 
   const getPreview = () => {
-    if (!dateValue || !timeValue) return null;
+    if (!dateValue || !timeValue) {
+      return null;
+    }
 
     try {
       const parsedDate = parse(dateValue, 'dd/MM/yyyy', new Date());
       const [hours, minutes] = timeValue.split(':').map(Number);
       parsedDate.setHours(hours, minutes, 0, 0);
 
-      if (isNaN(parsedDate.getTime())) return null;
+      if (isNaN(parsedDate.getTime())) {
+        return null;
+      }
 
       return format(parsedDate, "EEEE, dd MMMM yyyy 'at' HH:mm");
     } catch (e) {

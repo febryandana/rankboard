@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { LeaderboardEntry } from '../../types';
+import { type LeaderboardEntry } from '../../types';
 import {
   BarChart,
   Bar,
