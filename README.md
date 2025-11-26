@@ -4,6 +4,7 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/docker-%E2%9C%93-blue)](https://www.docker.com/)
 [![TypeScript](https://img.shields.io/badge/typescript-%E2%9C%93-blue)](https://www.typescriptlang.org/)
+[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
 RankBoard is a comprehensive web-based platform designed for managing coding challenges, collecting submissions, and facilitating independent scoring by multiple judges. It provides real-time leaderboards, user management, and a seamless experience for both administrators and participants.
 
