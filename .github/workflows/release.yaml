@@ -1,4 +1,4 @@
-name: Release and Deploy
+name: Release and Deploy Prod Images
 
 on:
   pull_request:
@@ -6,9 +6,13 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 env:
-  BACKEND_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/your-backend-app
-  FRONTEND_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/your-frontend-app
+  REGISTRY: docker.io
+  FRONTEND_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/rankboard-frontend
+  BACKEND_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/rankboard-backend
 
 jobs:
   release:
@@ -48,11 +52,14 @@ jobs:
         run: npx semantic-release
 
   build-and-push-backend:
-    name: Build and Push Backend Image
+    name: Build and Push Prod Backend Image
     needs: [release]
     if: needs.release.outputs.new_release_published == 'true'
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: read
+      security-events: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -118,11 +125,14 @@ jobs:
           docker push ${{ env.BACKEND_IMAGE_NAME }}:latest
 
   build-and-push-frontend:
-    name: Build and Push Frontend Image
+    name: Build and Push Prod Frontend Image
     needs: [release]
     if: needs.release.outputs.new_release_published == 'true'
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: read
+      security-events: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

@@ -1,9 +1,12 @@
-name: RankBoard CI/CD Pipeline
+name: Test and Build Dev Images
 
 on:
   push:
     branches:
       - dev
+
+permissions:
+  contents: read
 
 env:
   REGISTRY: docker.io
@@ -17,6 +20,8 @@ jobs:
     defaults:
       run:
         working-directory: ./backend
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout code
@@ -72,6 +77,8 @@ jobs:
     defaults:
       run:
         working-directory: ./frontend
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout code
@@ -122,10 +129,13 @@ jobs:
         continue-on-error: true
 
   build-and-push-backend:
-    name: Build and Push Backend Images
+    name: Build and Push Dev Backend Images
     needs: [test-backend]
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: read
+      security-events: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -157,7 +167,9 @@ jobs:
           file: ./backend/Dockerfile
           push: false
           load: true
-          tags: ${{ env.BACKEND_IMAGE_NAME }}:${{ steps.meta.outputs.tag }}
+          tags: |
+            ${{ env.BACKEND_IMAGE_NAME }}:${{ steps.meta.outputs.tag }}
+            ${{ env.BACKEND_IMAGE_NAME }}:${{ steps.meta.outputs.branch }}-latest
           cache-from: type=registry,ref=${{ env.BACKEND_IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.BACKEND_IMAGE_NAME }}:buildcache,mode=max
 
@@ -186,15 +198,17 @@ jobs:
 
       - name: Push Backend image
         run: |
-          docker tag ${{ env.BACKEND_IMAGE_NAME }}:${{ steps.meta.outputs.tag }} ${{ env.BACKEND_IMAGE_NAME }}:${{ steps.meta.outputs.branch }}-latest
           docker push ${{ env.BACKEND_IMAGE_NAME }}:${{ steps.meta.outputs.tag }}
           docker push ${{ env.BACKEND_IMAGE_NAME }}:${{ steps.meta.outputs.branch }}-latest
 
   build-and-push-frontend:
-    name: Build and Push Frontend Images
+    name: Build and Push Dev Frontend Images
     needs: [test-frontend]
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: read
+      security-events: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -226,7 +240,9 @@ jobs:
           file: ./frontend/Dockerfile
           push: false
           load: true
-          tags: ${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.meta.outputs.tag }}
+          tags: |
+            ${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.meta.outputs.tag }}
+            ${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.meta.outputs.branch }}-latest
           cache-from: type=registry,ref=${{ env.FRONTEND_IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.FRONTEND_IMAGE_NAME }}:buildcache,mode=max
 
@@ -255,6 +271,5 @@ jobs:
 
       - name: Push Frontend image
         run: |
-          docker tag ${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.meta.outputs.tag }} ${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.meta.outputs.branch }}-latest
           docker push ${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.meta.outputs.tag }}
           docker push ${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.meta.outputs.branch }}-latest
