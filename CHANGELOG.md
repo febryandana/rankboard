@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3](https://github.com/febryandana/rankboard/compare/v0.0.2...v0.0.3) (2025-11-26)
+
+### Bug Fixes
+
+- fix release cicd workflow ([d2e3847](https://github.com/febryandana/rankboard/commit/d2e3847faa5b31af3df7fdf2068657c2cf36c6f8))
+
 ## [0.0.2](https://github.com/febryandana/rankboard/compare/v0.0.1...v0.0.2) (2025-11-26)
 
 ### Bug Fixes
