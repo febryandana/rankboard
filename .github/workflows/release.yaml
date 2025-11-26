@@ -1,8 +1,7 @@
 name: Release and Deploy Prod Images
 
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - main
 
@@ -26,6 +25,7 @@ jobs:
     outputs:
       new_release_published: ${{ steps.semantic.outputs.new_release_published }}
       new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+      should_release: ${{ steps.check_source.outputs.should_release }}
     
     steps:
       - name: Checkout
@@ -34,18 +34,38 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Check if merge from dev branch
+        id: check_source
+        run: |
+          # Get the commit message
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Commit message: $COMMIT_MSG"
+          
+          # Check if this is a merge commit from dev
+          if echo "$COMMIT_MSG" | grep -qiE "Merge pull request.*from.*dev|Merge branch 'dev'"; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "This is a merge from dev branch"
+          else
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            echo "This is not a merge from dev branch, skipping release"
+          fi
+
       - name: Setup Node.js
+        if: steps.check_source.outputs.should_release == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
 
       - name: Install dependencies
+        if: steps.check_source.outputs.should_release == 'true'
         run: npm ci
       
       - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+        if: steps.check_source.outputs.should_release == 'true'
         run: npm audit signatures
 
       - name: Release
+        if: steps.check_source.outputs.should_release == 'true'
         id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -54,7 +74,7 @@ jobs:
   build-and-push-backend:
     name: Build and Push Prod Backend Image
     needs: [release]
-    if: needs.release.outputs.new_release_published == 'true'
+    if: needs.release.outputs.should_release == 'true' && needs.release.outputs.new_release_published == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -127,7 +147,7 @@ jobs:
   build-and-push-frontend:
     name: Build and Push Prod Frontend Image
     needs: [release]
-    if: needs.release.outputs.new_release_published == 'true'
+    if: needs.release.outputs.should_release == 'true' && needs.release.outputs.new_release_published == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
