@@ -1,11 +1,28 @@
 {
-  "devDependencies": {
-    "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
-    "prettier": "^3.6.2"
-  },
+  "name": "rankboard",
+  "version": "0.0.1",
+  "description": "RankBoard - Challenges Scoring & Leaderboard Platform",
+  "keywords": [
+    "rankboard",
+    "challenges",
+    "scoring",
+    "leaderboard"
+  ],
+  "author": "Febryandana",
+  "license": "MIT",
   "scripts": {
     "prepare": "husky"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.2",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.6.2",
+    "semantic-release": "^25.0.2"
   },
   "lint-staged": {
     "backend/**/*.{ts,tsx}": [
@@ -16,6 +33,37 @@
     ],
     "*.{json,md}": [
       "prettier --write"
+    ]
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            {
+              "path": "dist.zip",
+              "label": "Distribution"
+            }
+          ]
+        }
+      ],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "CHANGELOG.md"
+          ],
+          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        }
+      ]
     ]
   }
 }

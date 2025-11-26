@@ -1,7 +1,7 @@
 {
   "name": "rankboard-backend",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "RankBoard Backend - Challenges Scoring & Leaderboard Platform",
   "main": "dist/server.js",
   "scripts": {
