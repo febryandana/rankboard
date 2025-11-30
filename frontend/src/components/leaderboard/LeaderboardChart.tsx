@@ -33,9 +33,9 @@ const LeaderboardChart = memo(function LeaderboardChart({ leaderboard }: Leaderb
         total: entry.total_score,
       };
 
-      entry.scores.forEach((score) => {
-        dataPoint[score.admin_username] = score.score;
-      });
+      //entry.scores.forEach((score) => {
+      //  dataPoint[score.admin_username] = score.score;
+      //});
 
       return dataPoint;
     });
@@ -102,14 +102,14 @@ const LeaderboardChart = memo(function LeaderboardChart({ leaderboard }: Leaderb
           />
 
           {/* Bar for each admin */}
-          {adminNames.map((adminName, index) => (
+          {/*           {adminNames.map((adminName, index) => (
             <Bar
               key={adminName}
               dataKey={adminName}
               fill={colors[index % colors.length]}
               name={adminName}
             />
-          ))}
+          ))} */}
 
           {/* Total bar */}
           <Bar dataKey="total" fill="hsl(var(--primary))" name="Total Score" />
