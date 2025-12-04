@@ -41,15 +41,6 @@ const LeaderboardChart = memo(function LeaderboardChart({ leaderboard }: Leaderb
     });
   }, [dataWithSubmissions]);
 
-  // Memoize admin names extraction
-  const adminNames = useMemo(() => {
-    return Array.from(
-      new Set(
-        dataWithSubmissions.flatMap((entry) => entry.scores.map((score) => score.admin_username))
-      )
-    );
-  }, [dataWithSubmissions]);
-
   if (dataWithSubmissions.length === 0) {
     return (
       <div className="bg-card border rounded-lg p-8 text-center text-muted-foreground">
@@ -57,14 +48,6 @@ const LeaderboardChart = memo(function LeaderboardChart({ leaderboard }: Leaderb
       </div>
     );
   }
-
-  const colors = [
-    'hsl(var(--chart-1))',
-    'hsl(var(--chart-2))',
-    'hsl(var(--chart-3))',
-    'hsl(var(--chart-4))',
-    'hsl(var(--chart-5))',
-  ];
 
   const isDark = resolvedTheme === 'dark';
 
